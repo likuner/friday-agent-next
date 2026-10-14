@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 一键启动脚本的 PID / 导入检查产物
+.run/
+
+# mimosa 安全扫描插件的工作数据（hook 基线快照 / 审查报告，按会话生成）
+.mimosa/
