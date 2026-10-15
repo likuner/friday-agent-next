@@ -58,21 +58,23 @@ workspaces/                 Agent 各会话的工作目录（运行时数据）
 # 1. 依赖
 npm install
 
-# 2. 起数据库（容器 friday-agent-next-postgres，映射到宿主机 5433）
-docker compose up -d
-
-# 3. 配置环境变量（JWT_SECRET 必须设置，弱值会直接启动失败）
+# 2. 配置环境变量（JWT_SECRET 必须设置，弱值会直接启动失败）
 cp .env.example .env
 openssl rand -hex 32        # 把输出填到 .env 的 JWT_SECRET
+
+# 3. 一键启动本地服务（PostgreSQL + Next.js，日志写入 .run/）
+npm run local:start
 
 # 4. 建表（应用 drizzle/ 下的迁移）
 npx drizzle-kit migrate
 
-# 5. 启动（端口固定 3333，见 package.json）
-npm run dev                 # 或 npm run build && npm start
+# 停止本地服务（保留 PostgreSQL 数据卷）
+npm run local:stop
+
+# 也可以分别执行：docker compose up -d / npm run dev
 ```
 
-打开 **http://localhost:3333** → 注册一个账号，或直接建开发账号：
+打开启动脚本输出的 Next.js 地址（默认是 **http://localhost:3333**；如果端口被占用会自动顺延）→ 注册一个账号，或直接建开发账号：
 
 ```bash
 npx tsx scripts/dev-seed-user.mts devtester   # 口令固定 test123456；输出 { user_id, token }
@@ -81,7 +83,7 @@ npx tsx scripts/dev-seed-user.mts devtester   # 口令固定 test123456；输出
 脚本会把 JWT 一并打印出来，方便绕过验证码直接 curl 调试：
 
 ```bash
-curl -s -H "Authorization: Bearer <token>" http://localhost:3333/api/auth/me
+curl -s -H "Authorization: Bearer <token>" http://localhost:<实际端口>/api/auth/me
 ```
 
 > 想看假流（不需要任何模型 key）：`.env` 里保持 `MODEL_PROVIDER=demo` 即可，回复由本地假流生成。
@@ -163,7 +165,7 @@ npx drizzle-kit studio     # 可视化查看数据
 
 ## 注意事项（踩过的坑）
 
-1. **端口**：固定 3333，写在 `package.json` 的 `next dev -p 3333` / `next start -p 3333`。**在 `.env` 里写 `PORT` 无效** —— Next CLI 在读取 `.env` 之前就已确定端口，只认进程环境变量（`PORT=3333 npm run dev` 也有效，但 CLI 的 `-p` 优先级更高）。
+1. **端口**：直接执行 `npm run dev` / `npm start` 时固定为 3333；执行 `npm run local:start` 时从 3333 开始自动寻找可用端口，并在启动输出中显示实际地址。**在 `.env` 里写 `PORT` 无效** —— Next CLI 在读取 `.env` 之前就已确定端口，只认进程环境变量（`PORT=3333 npm run dev` 也有效，但 CLI 的 `-p` 优先级更高）。
 2. **antd 的 CSS-in-JS 必须只有一份 `@ant-design/cssinjs`**（`package.json` 里显式锁 `^1.24.0` + `overrides`）。`@ant-design/nextjs-registry` 的 peer 是 `>=1.0.0`，npm 默认会装 v2，而 antd 用 v1 —— 两个实例的 React Context 不互通，SSR 抽取结果为空、首帧完全没有 antd 样式，水合后才补上（表现为**刷新时样式挤压/抖动**）。升级依赖后跑一次 `npm ls @ant-design/cssinjs`，确认只剩一份。
 3. **antd reset 必须分层**：`antd/dist/reset.css` 是无层级（unlayered）样式，会压过 Tailwind v4 放在 `@layer utilities` 里的所有工具类（层叠规则：无层级 > 有层级，与特异性无关）。因此它在 [globals.css](src/app/globals.css) 里以 `@import "..." layer(antd-reset)` 引入，并在文件顶部声明层序。用包名（`@import "antd/dist/reset.css"`）而非相对路径会**被静默丢弃**。
 4. **用 `127.0.0.1` 打开时必须配 `allowedDevOrigins`**（已在 [next.config.ts](next.config.ts) 配好）。否则 Next 会把 `/_next/*` 开发资源当跨源请求拦掉，页面只渲染 SSR 首帧、**完全不水合**（验证码不加载、按钮点了没反应）。

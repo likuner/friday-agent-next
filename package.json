@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3333",
+    "local:start": "bash scripts/start.sh",
+    "local:stop": "bash scripts/stop.sh",
     "build": "next build",
     "start": "next start -p 3333",
     "lint": "eslint"
