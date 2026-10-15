@@ -46,3 +46,5 @@ next-env.d.ts
 
 # mimosa 安全扫描插件的工作数据（hook 基线快照 / 审查报告，按会话生成）
 .mimosa/
+
+/files/
