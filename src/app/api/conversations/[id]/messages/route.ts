@@ -262,6 +262,12 @@ async function runStream(args: RunStreamArgs) {
       // ---- 真实模型：streamText + 手动翻译 fullStream → UIMessage 流 ----
       const result = streamText({
         model,
+        // DeepSeek defaults to thinking; set its API switch on every tool-loop step.
+        providerOptions: {
+          deepseek: {
+            thinking: { type: deepThinking ? 'enabled' : 'disabled' },
+          },
+        },
         system,
         messages: modelMessages,
         tools: Object.keys(allTools).length ? allTools : undefined,
