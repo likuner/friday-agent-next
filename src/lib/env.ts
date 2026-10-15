@@ -32,8 +32,8 @@ export const env = {
   modelProvider: str('MODEL_PROVIDER', 'demo'),
   openaiApiKey: str('OPENAI_API_KEY'),
   openaiBaseUrl: str('OPENAI_BASE_URL', 'https://api.deepseek.com'),
-  openaiModel: str('OPENAI_MODEL', 'deepseek-v4-pro'),
-  openaiThinkingModel: str('OPENAI_THINKING_MODEL', 'deepseek-v4-pro'),
+  openaiModel: str('OPENAI_MODEL', 'deepseek-flash'),
+  openaiThinkingModel: str('OPENAI_THINKING_MODEL', 'deepseek-flash'),
 
   zhipuApiKey: str('ZHIPU_API_KEY'),
   glmBaseUrl: str('GLM_BASE_URL', 'https://open.bigmodel.cn/api/paas/v4'),

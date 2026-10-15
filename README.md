@@ -99,7 +99,7 @@ curl -s -H "Authorization: Bearer <token>" http://localhost:<实际端口>/api/a
 | `JWT_EXPIRE_MINUTES` | `10080` | token 有效期（分钟），默认 7 天 |
 | `MODEL_PROVIDER` | `demo` | `demo` = 本地假流；`deepseek` = OpenAI 兼容直连 |
 | `OPENAI_API_KEY` / `OPENAI_BASE_URL` | 空 / `https://api.deepseek.com` | 主对话模型 |
-| `OPENAI_MODEL` / `OPENAI_THINKING_MODEL` | `deepseek-v4-pro` | 普通 / 深度思考模式用模型 |
+| `OPENAI_MODEL` / `OPENAI_THINKING_MODEL` | `deepseek-flash` | 普通 / 深度思考模式用模型，均支持图片输入；思考模式由按钮控制 |
 | `ZHIPU_API_KEY` / `GLM_BASE_URL` / `GLM_MODEL` | 空 / 智谱地址 / `glm-5.3-flash` | 滚动摘要与长期记忆抽取 |
 | `MCP_SERVER_URL` | `http://127.0.0.1:8806/mcp` | MCP 工具服务（沿用旧项目的实例，勿改其配置） |
 | `MCP_AUTH_TOKEN` | 空 | MCP 服务鉴权；与旧项目保持一致 |
